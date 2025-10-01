@@ -6,7 +6,9 @@ import lombok.Setter;
 
 
 public enum ErrorCode {
-    USER_UNKNOWN(666,"Unknown exception"),
+    USER_NOTFOUND(777,"user doesn't existed"),
+
+    USER_UNKNOWN(666,"Sth Wrong"),
     USER_EXISTED(1001,"user existed"),
     USERNAME_INVALID(1002,"username must at least 3 character"),
     PASSWORD_INVALID(1003,"password must at least 8 character")

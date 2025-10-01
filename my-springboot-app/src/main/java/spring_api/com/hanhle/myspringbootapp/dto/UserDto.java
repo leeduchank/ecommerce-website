@@ -1,14 +1,20 @@
 package spring_api.com.hanhle.myspringbootapp.dto;
 
 import jakarta.validation.constraints.Size;
-import lombok.Data;
+import lombok.*;
+import lombok.experimental.FieldDefaults;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserDto {
+
     @Size(min = 4,message = "USERNAME_INVALID")
-    private String username;
+     String username;
 
     @Size(min = 8 , message = "PASSWORD_INVALID")
-    private String password;
-    private String email;
+     String password;
+     String email;
 }

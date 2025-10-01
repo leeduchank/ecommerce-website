@@ -1,37 +1,41 @@
 package spring_api.com.hanhle.myspringbootapp.services;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 import spring_api.com.hanhle.myspringbootapp.dto.LoginRequest;
 import spring_api.com.hanhle.myspringbootapp.dto.UserDto;
 import spring_api.com.hanhle.myspringbootapp.entities.UserEntity;
 import spring_api.com.hanhle.myspringbootapp.exception.AppException;
 import spring_api.com.hanhle.myspringbootapp.exception.ErrorCode;
+import spring_api.com.hanhle.myspringbootapp.mapper.UserMapper;
 import spring_api.com.hanhle.myspringbootapp.repositories.UserRepository;
 
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE  ,makeFinal = true)
 public class UserService {
-    private final UserRepository userRepository;
+    UserRepository userRepository;
 
-    public UserEntity register (UserDto userDto){
+    UserMapper userMapper;
+
+    public UserDto register (UserDto userDto){
         if (userRepository.existsByUsername(userDto.getUsername()))
             throw new AppException(ErrorCode.USER_EXISTED);
-        UserEntity user = new UserEntity();
-        user.setUsername(userDto.getUsername());
-        user.setPassword(userDto.getPassword());
-        user.setEmail(userDto.getEmail());
-
-
-
-
-
-        return userRepository.save(user);
-
-
+        UserEntity user = userMapper.toUserEntity(userDto);
+        return userMapper.toUserDto(userRepository.save(user));
     };
+
+    public void update(Long id,UserDto userDto){
+        UserEntity userEntity = userMapper.toUserEntity(getUserById(id));
+        userMapper.updateUser(userEntity,userDto);
+        userRepository.save(userEntity);
+
+    }
 
 
     public boolean login(LoginRequest loginRequest)
@@ -42,12 +46,20 @@ public class UserService {
                 .orElse(false);
     }
 
-    public UserEntity getUserById (Long id){
-        return userRepository.findById(id)
-                .orElseThrow(()->new RuntimeException("User not found with id: " + id));
+    public void delete(Long id){
+        UserDto userDto = getUserById(id);
+        UserEntity userEntity = userMapper.toUserEntity(userDto);
+        userRepository.delete(userEntity);
     }
 
-    public List<UserEntity> getAllUsers(){
-        return userRepository.findAll();
+    public UserDto getUserById (Long id){
+        return userMapper.toUserDto(userRepository.findById(id)
+                .orElseThrow(()->new AppException(ErrorCode.USER_NOTFOUND)));
+
+
+    }
+
+    public List<UserDto> getAllUsers(){
+        return userMapper.toListUserDto(userRepository.findAll());
     }
 }
