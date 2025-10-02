@@ -11,6 +11,7 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserDto {
 
+    Long id;
     @Size(min = 4,message = "USERNAME_INVALID")
      String username;
 

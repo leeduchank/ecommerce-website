@@ -3,16 +3,11 @@ package spring_api.com.hanhle.myspringbootapp.controllers;
 
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.mapstruct.control.MappingControl;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import spring_api.com.hanhle.myspringbootapp.dto.ApiResponse;
-import spring_api.com.hanhle.myspringbootapp.dto.LoginRequest;
+import spring_api.com.hanhle.myspringbootapp.dto.response.ApiResponse;
 import spring_api.com.hanhle.myspringbootapp.dto.UserDto;
-import spring_api.com.hanhle.myspringbootapp.entities.UserEntity;
 import spring_api.com.hanhle.myspringbootapp.services.UserService;
 
 import java.util.List;
@@ -27,36 +22,21 @@ public class UserController {
 
     @PostMapping("/register")
     public ApiResponse<UserDto> register(@RequestBody @Valid UserDto userDto){
-        userService.register(userDto);
         ApiResponse<UserDto> apiResponse = new ApiResponse<>();
         apiResponse.setCode(1000);
         apiResponse.setMessage("Tao thanh cong");
-        apiResponse.setResult(userDto);
+        apiResponse.setResult(userService.register(userDto));
         return apiResponse;
     }
 
 
-    @PostMapping("login")
-    public ApiResponse  <String> login(@RequestBody LoginRequest loginRequest){
-        ApiResponse<String> apiResponse = new ApiResponse<>();
-        if(userService.login(loginRequest)) {
-            apiResponse.setCode(200);
-            apiResponse.setResult("Dang nhap thanh coong!!");
-        }
-        else
-        {
-            apiResponse.setCode(400);
-            apiResponse.setResult("Dang nhap khong thanh coong!!");
-        }
-        return apiResponse;
-    }
+
     @PutMapping("/{id}")
-    public ApiResponse updateUserByID(@PathVariable("id") Long id,@RequestBody UserDto userDto){
-        userService.update(id,userDto);
+    public ApiResponse<UserDto> updateUserByID(@PathVariable("id") Long id,@RequestBody UserDto userDto){
         ApiResponse<UserDto> apiResponse = new ApiResponse<>();
         apiResponse.setCode(200);
         apiResponse.setMessage("Da thay doi thanh cong username voi id " + id);
-        apiResponse.setResult(userDto);
+        apiResponse.setResult(userService.update(id,userDto));
         return apiResponse;
     }
 

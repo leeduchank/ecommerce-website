@@ -1,4 +1,4 @@
-package spring_api.com.hanhle.myspringbootapp.dto;
+package spring_api.com.hanhle.myspringbootapp.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;

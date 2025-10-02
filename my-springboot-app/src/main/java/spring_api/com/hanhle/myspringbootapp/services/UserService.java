@@ -1,11 +1,12 @@
 package spring_api.com.hanhle.myspringbootapp.services;
 
 import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import spring_api.com.hanhle.myspringbootapp.dto.LoginRequest;
+import spring_api.com.hanhle.myspringbootapp.dto.request.AuthenticationRequest;
 import spring_api.com.hanhle.myspringbootapp.dto.UserDto;
 import spring_api.com.hanhle.myspringbootapp.entities.UserEntity;
 import spring_api.com.hanhle.myspringbootapp.exception.AppException;
@@ -27,24 +28,21 @@ public class UserService {
         if (userRepository.existsByUsername(userDto.getUsername()))
             throw new AppException(ErrorCode.USER_EXISTED);
         UserEntity user = userMapper.toUserEntity(userDto);
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
+        user.setPassword(passwordEncoder.encode(userDto.getPassword()));
         return userMapper.toUserDto(userRepository.save(user));
     };
 
-    public void update(Long id,UserDto userDto){
+    public UserDto update(Long id,UserDto userDto){
         UserEntity userEntity = userMapper.toUserEntity(getUserById(id));
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
         userMapper.updateUser(userEntity,userDto);
-        userRepository.save(userEntity);
-
+        userEntity.setPassword(passwordEncoder.encode(userDto.getPassword()));
+        return (userMapper.toUserDto(userRepository.save(userEntity)));
     }
 
 
-    public boolean login(LoginRequest loginRequest)
-    {
 
-        return userRepository.findByUsername(loginRequest.getUsername())
-                .map(user->user.getPassword().equals(loginRequest.getPassword()))
-                .orElse(false);
-    }
 
     public void delete(Long id){
         UserDto userDto = getUserById(id);
