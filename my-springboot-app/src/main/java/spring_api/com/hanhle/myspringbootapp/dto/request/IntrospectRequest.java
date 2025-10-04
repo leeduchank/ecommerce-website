@@ -1,6 +1,5 @@
 package spring_api.com.hanhle.myspringbootapp.dto.request;
 
-
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -9,8 +8,6 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class AuthenticationRequest {
-    String username;
-    String password;
-
+public class IntrospectRequest {
+    String token;
 }

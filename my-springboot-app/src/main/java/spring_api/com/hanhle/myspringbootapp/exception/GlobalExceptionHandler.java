@@ -11,19 +11,20 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse> hanldingRuntimeException(Exception e) {
 
-        ApiResponse <String> apiResponse = new ApiResponse<>();
-        apiResponse.setCode(ErrorCode.USER_UNKNOWN.getCode());
-        apiResponse.setMessage(ErrorCode.USER_UNKNOWN.getMessage());
-        return ResponseEntity.badRequest().body(apiResponse);
+
+        return ResponseEntity.badRequest().body(ApiResponse.<String>builder()
+                .code(ErrorCode.USER_UNKNOWN.getCode())
+                .message(ErrorCode.USER_UNKNOWN.getMessage())
+                .build());
     }
 
     @ExceptionHandler(AppException.class)
     public ResponseEntity<ApiResponse> hanldingAppException(AppException e) {
         ErrorCode errorCode = e.getErrorCode();
-        ApiResponse <String> apiResponse = new ApiResponse<>();
-        apiResponse.setCode(errorCode.getCode());
-        apiResponse.setMessage(errorCode.getMessage());
-        return ResponseEntity.badRequest().body(apiResponse);
+        return ResponseEntity.badRequest().body(ApiResponse.<String>builder()
+                .code(errorCode.getCode())
+                .message(errorCode.getMessage())
+                .build());
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -31,9 +32,8 @@ public class GlobalExceptionHandler {
     {
         String enumkey = e.getFieldError().getDefaultMessage();
         ErrorCode errorCode = ErrorCode.valueOf(enumkey);
-        ApiResponse <String> apiResponse = new ApiResponse<>();
-        apiResponse.setCode(errorCode.getCode());
-        apiResponse.setMessage(errorCode.getMessage());
-        return ResponseEntity.badRequest().body(apiResponse);
-    }
+        return ResponseEntity.badRequest().body(ApiResponse.<String>builder()
+                .code(errorCode.getCode())
+                .message(errorCode.getMessage())
+                .build());    }
 }
