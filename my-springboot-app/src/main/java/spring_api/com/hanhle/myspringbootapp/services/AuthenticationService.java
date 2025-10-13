@@ -55,7 +55,7 @@ public class AuthenticationService {
         if (!authenticated)
         {
             System.out.println(userEntity.getPassword()+ " - " + loginRequest.getPassword());
-            throw new AppException(ErrorCode.UNAUTHENTICATED);
+            throw new AppException(ErrorCode.PASSWORD_UNKNOWN);
         }
         String token = generateToken(userEntity);
 

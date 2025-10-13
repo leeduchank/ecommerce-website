@@ -3,6 +3,10 @@ package spring_api.com.hanhle.myspringbootapp.services;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -22,6 +26,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE  ,makeFinal = true)
+@Slf4j
 public class UserService {
     UserRepository userRepository;
 
@@ -48,6 +53,12 @@ public class UserService {
     }
 
 
+    public UserResponse userGetInfo(){
+        var context = SecurityContextHolder.getContext();
+        String name = context.getAuthentication().getName();
+        UserEntity userEntity = userRepository.findByUsername(name).orElseThrow(() -> new AppException(ErrorCode.USER_EXISTED));
+    return userMapper.toUserResponse(userEntity);
+    }
 
 
     public void delete(Long id){
@@ -56,14 +67,19 @@ public class UserService {
         userRepository.delete(userEntity);
     }
 
+
+@PostAuthorize("returnObject.username == authentication.name")
     public UserResponse getUserById (Long id){
-        return userMapper.toUserResponse(userRepository.findById(id)
+    log.info("in method Get User by id");
+    return userMapper.toUserResponse(userRepository.findById(id)
                 .orElseThrow(()->new AppException(ErrorCode.USER_NOTFOUND)));
 
 
     }
-
-    public List<UserResponse> getAllUsers(){
+@PreAuthorize("hasRole('ADMIN')")
+    public List<UserResponse> getAllUsers()
+{
+    log.info("in method Get User List");
         return userMapper.toListUserResponse(userRepository.findAll());
     }
 }
